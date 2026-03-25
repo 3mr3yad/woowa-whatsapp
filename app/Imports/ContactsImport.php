@@ -35,6 +35,12 @@ class ContactsImport implements ToCollection
 
             $name = $name !== null ? trim((string) $name) : null;
             $phone = $this->normalizePhone($rawPhone);
+            $message = $this->getColumnValue($values, $headerMap, 'message', 2);
+            $message = $message !== null ? trim((string) $message) : null;
+            $fileUrl = $this->getColumnValue($values, $headerMap, 'file_url', 3);
+            $fileUrl = $fileUrl !== null ? trim((string) $fileUrl) : null;
+            $imageUrl = $this->getColumnValue($values, $headerMap, 'image_url', 4);
+            $imageUrl = $imageUrl !== null ? trim((string) $imageUrl) : null;
 
             if (!$phone) {
                 continue;
@@ -44,6 +50,9 @@ class ContactsImport implements ToCollection
                 'campaign_id' => $this->campaignId,
                 'name' => $name,
                 'phone' => $phone,
+                'message' => $message,
+                'file_url' => $fileUrl,
+                'image_url' => $imageUrl,
                 'done_send' => false,
             ]);
         }
@@ -88,6 +97,18 @@ class ContactsImport implements ToCollection
             if (in_array($key, ['phone', 'mobile', 'msisdn'], true)) {
                 $map[$key] = $i;
                 $map['phone'] = $map['phone'] ?? $i;
+            }
+
+            if (in_array($key, ['message', 'msg', 'text'], true)) {
+                $map['message'] = $i;
+            }
+
+            if (in_array($key, ['file_url', 'url', 'file'], true)) {
+                $map['file_url'] = $i;
+            }
+
+            if (in_array($key, ['image_url', 'image', 'img', 'picture'], true)) {
+                $map['image_url'] = $i;
             }
         }
 

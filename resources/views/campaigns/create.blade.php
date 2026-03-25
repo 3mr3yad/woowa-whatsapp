@@ -23,7 +23,41 @@
                 <div class="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-200">{{ session('error') }}</div>
             @endif
 
-        <form x-data="{ fileName: '', uploading: false }"
+        <form x-data="{
+                    fileName: '',
+                    uploading: false,
+                    message: @js(old('message')),
+                    insertText(text) {
+                        const el = this.$refs.message;
+                        if (!el) return;
+                        const start = el.selectionStart ?? 0;
+                        const end = el.selectionEnd ?? 0;
+                        const before = (this.message ?? '').slice(0, start);
+                        const after = (this.message ?? '').slice(end);
+                        this.message = before + text + after;
+                        this.$nextTick(() => {
+                            el.focus();
+                            const pos = start + text.length;
+                            el.setSelectionRange(pos, pos);
+                        });
+                    },
+                    wrapSelection(prefix, suffix) {
+                        const el = this.$refs.message;
+                        if (!el) return;
+                        const start = el.selectionStart ?? 0;
+                        const end = el.selectionEnd ?? 0;
+                        const selected = (this.message ?? '').slice(start, end);
+                        const before = (this.message ?? '').slice(0, start);
+                        const after = (this.message ?? '').slice(end);
+                        this.message = before + prefix + selected + suffix + after;
+                        this.$nextTick(() => {
+                            el.focus();
+                            const selStart = start + prefix.length;
+                            const selEnd = selStart + selected.length;
+                            el.setSelectionRange(selStart, selEnd);
+                        });
+                    }
+              }"
               @submit="uploading = true"
               action="{{ route('campaigns.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5 bg-white/80 dark:bg-gray-900/40 backdrop-blur p-6 sm:p-8 rounded-2xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-800">
             @csrf
@@ -36,8 +70,30 @@
 
             <div>
                 <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Message</label>
-                <textarea name="message" rows="8"
-                          class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-white dark:focus:ring-white/10">{{ old('message') }}</textarea>
+                <div class="rounded-2xl ring-1 ring-gray-200 dark:ring-gray-800 overflow-hidden bg-white dark:bg-gray-900/40">
+                    <div class="flex flex-wrap items-center gap-2 px-3 py-2 border-b border-gray-200 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-900/60">
+                        <button type="button" @click.prevent="wrapSelection('*', '*')" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-semibold text-gray-900 dark:text-gray-100 ring-1 ring-gray-200 dark:ring-gray-700 hover:bg-white/70 dark:hover:bg-gray-900">
+                            Bold
+                        </button>
+                        <button type="button" @click.prevent="wrapSelection('_', '_')" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-semibold text-gray-900 dark:text-gray-100 ring-1 ring-gray-200 dark:ring-gray-700 hover:bg-white/70 dark:hover:bg-gray-900">
+                            Italic
+                        </button>
+                        <button type="button" @click.prevent="wrapSelection('`', '`')" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-semibold text-gray-900 dark:text-gray-100 ring-1 ring-gray-200 dark:ring-gray-700 hover:bg-white/70 dark:hover:bg-gray-900">
+                            Monospace
+                        </button>
+                        <button type="button" @click.prevent="insertText('\n')" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-semibold text-gray-900 dark:text-gray-100 ring-1 ring-gray-200 dark:ring-gray-700 hover:bg-white/70 dark:hover:bg-gray-900">
+                            New line
+                        </button>
+                        <div class="mx-1 h-4 w-px bg-gray-200 dark:bg-gray-800"></div>
+                        <button type="button" @click.prevent="insertText('{name}')" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-semibold text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-200 dark:ring-emerald-800 bg-emerald-50/60 dark:bg-emerald-900/20 hover:bg-emerald-50 dark:hover:bg-emerald-900/30">
+                            Insert {name}
+                        </button>
+                        <div class="ml-auto text-xs text-gray-500 dark:text-gray-400">Supports {name}</div>
+                    </div>
+                    <textarea x-ref="message" x-model="message" name="message" rows="8"
+                              class="w-full border-0 bg-transparent px-4 py-3 text-sm text-gray-900 dark:text-gray-100 shadow-sm outline-none focus:ring-0"></textarea>
+                </div>
+                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">If your sheet has a <span class="font-semibold">message</span> column, it will override this message per contact.</div>
             </div>
 
             <div>
@@ -49,6 +105,20 @@
                 <div x-show="fileName" class="mt-2 text-xs text-gray-600 dark:text-gray-300" style="display: none;">
                     Selected: <span class="font-medium" x-text="fileName"></span>
                 </div>
+            </div>
+
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Image (optional)</label>
+                <input type="file" name="image" accept="image/*"
+                       class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm outline-none transition file:mr-4 file:rounded-lg file:border-0 file:bg-gray-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-gray-800 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-100 dark:file:bg-white dark:file:text-gray-900 dark:hover:file:bg-gray-100">
+                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">If provided, it will be sent with the message as an image caption (unless a per-row image URL exists in the sheet).</div>
+            </div>
+
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Image URL (recommended for local)</label>
+                <input type="url" name="campaign_image_url" value="{{ old('campaign_image_url') }}" placeholder="https://example.com/image.png"
+                       class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:ring-white/10">
+                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">This must be a publicly accessible HTTPS URL so WooWA can download the image. If set, it will be used when the sheet has no per-row image URL.</div>
             </div>
 
             <div class="flex items-center justify-end gap-3">

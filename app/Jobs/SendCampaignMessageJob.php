@@ -8,6 +8,7 @@ use App\Models\MessageLog;
 use App\Services\NotifApiService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Storage;
 
 class SendCampaignMessageJob implements ShouldQueue
 {
@@ -32,38 +33,127 @@ class SendCampaignMessageJob implements ShouldQueue
             return;
         }
 
-        try {
-            $result = $notifApiService->sendMessage($contact->phone, $campaign->message);
+        $template = $contact->message ?: $campaign->message;
+        $name = (string) ($contact->name ?? '');
+        $finalMessage = str_replace(['{name}', '{{name}}'], $name, (string) $template);
 
-            MessageLog::create([
-                'campaign_id' => $campaign->id,
-                'contact_id' => $contact->id,
-                'phone' => $contact->phone,
-                'name' => $contact->name,
-                'message' => $campaign->message,
-                'api_response' => $result['body'],
-                'http_code' => $result['status'],
-                'status' => $result['success'] ? 'success' : 'failed',
-                'error_message' => $result['success'] ? null : 'API request failed',
-                'sent_at' => now(),
-            ]);
+        $imageUrl = $contact->image_url;
+        $fileUrl = $contact->file_url;
+        $fileLooksLikeImage = is_string($fileUrl) && $fileUrl !== '' && preg_match('/\.(png|jpe?g|webp|gif)(\?.*)?$/i', $fileUrl);
+        if (!$imageUrl && $fileLooksLikeImage) {
+            $imageUrl = $fileUrl;
+            $fileUrl = null;
+        }
 
-            if ($result['success']) {
-                $contact->update(['done_send' => true]);
+        if (!$imageUrl && $campaign->campaign_image_url) {
+            $imageUrl = $campaign->campaign_image_url;
+        }
+
+        if (!$imageUrl && $campaign->image_path) {
+            $publicPath = Storage::disk('public')->url($campaign->image_path);
+            $imageUrl = rtrim((string) config('app.url'), '/') . $publicPath;
+        }
+
+        if ($imageUrl) {
+            try {
+                $result = $notifApiService->sendImageUrl($contact->phone, $imageUrl, $finalMessage);
+
+                MessageLog::create([
+                    'campaign_id' => $campaign->id,
+                    'contact_id' => $contact->id,
+                    'phone' => $contact->phone,
+                    'name' => $contact->name,
+                    'message' => '[IMAGE] ' . $imageUrl . "\n" . $finalMessage,
+                    'api_response' => $result['body'],
+                    'http_code' => $result['status'],
+                    'status' => $result['success'] ? 'success' : 'failed',
+                    'error_message' => $result['success'] ? null : 'API request failed',
+                    'sent_at' => now(),
+                ]);
+
+                if ($result['success']) {
+                    $contact->update(['done_send' => true]);
+                }
+            } catch (\Throwable $e) {
+                MessageLog::create([
+                    'campaign_id' => $campaign->id,
+                    'contact_id' => $contact->id,
+                    'phone' => $contact->phone,
+                    'name' => $contact->name,
+                    'message' => '[IMAGE] ' . $imageUrl . "\n" . $finalMessage,
+                    'api_response' => null,
+                    'http_code' => null,
+                    'status' => 'failed',
+                    'error_message' => $e->getMessage(),
+                    'sent_at' => now(),
+                ]);
             }
-        } catch (\Throwable $e) {
-            MessageLog::create([
-                'campaign_id' => $campaign->id,
-                'contact_id' => $contact->id,
-                'phone' => $contact->phone,
-                'name' => $contact->name,
-                'message' => $campaign->message,
-                'api_response' => null,
-                'http_code' => null,
-                'status' => 'failed',
-                'error_message' => $e->getMessage(),
-                'sent_at' => now(),
-            ]);
+        } else {
+            try {
+                $result = $notifApiService->sendMessage($contact->phone, $finalMessage);
+
+                MessageLog::create([
+                    'campaign_id' => $campaign->id,
+                    'contact_id' => $contact->id,
+                    'phone' => $contact->phone,
+                    'name' => $contact->name,
+                    'message' => $finalMessage,
+                    'api_response' => $result['body'],
+                    'http_code' => $result['status'],
+                    'status' => $result['success'] ? 'success' : 'failed',
+                    'error_message' => $result['success'] ? null : 'API request failed',
+                    'sent_at' => now(),
+                ]);
+
+                if ($result['success']) {
+                    $contact->update(['done_send' => true]);
+                }
+            } catch (\Throwable $e) {
+                MessageLog::create([
+                    'campaign_id' => $campaign->id,
+                    'contact_id' => $contact->id,
+                    'phone' => $contact->phone,
+                    'name' => $contact->name,
+                    'message' => $finalMessage,
+                    'api_response' => null,
+                    'http_code' => null,
+                    'status' => 'failed',
+                    'error_message' => $e->getMessage(),
+                    'sent_at' => now(),
+                ]);
+            }
+        }
+
+        if ($fileUrl) {
+            try {
+                $fileResult = $notifApiService->sendFileUrl($contact->phone, $fileUrl);
+
+                MessageLog::create([
+                    'campaign_id' => $campaign->id,
+                    'contact_id' => $contact->id,
+                    'phone' => $contact->phone,
+                    'name' => $contact->name,
+                    'message' => '[FILE] ' . $fileUrl,
+                    'api_response' => $fileResult['body'],
+                    'http_code' => $fileResult['status'],
+                    'status' => $fileResult['success'] ? 'success' : 'failed',
+                    'error_message' => $fileResult['success'] ? null : 'API request failed',
+                    'sent_at' => now(),
+                ]);
+            } catch (\Throwable $e) {
+                MessageLog::create([
+                    'campaign_id' => $campaign->id,
+                    'contact_id' => $contact->id,
+                    'phone' => $contact->phone,
+                    'name' => $contact->name,
+                    'message' => '[FILE] ' . $fileUrl,
+                    'api_response' => null,
+                    'http_code' => null,
+                    'status' => 'failed',
+                    'error_message' => $e->getMessage(),
+                    'sent_at' => now(),
+                ]);
+            }
         }
 
         $total = $campaign->contacts()->count();

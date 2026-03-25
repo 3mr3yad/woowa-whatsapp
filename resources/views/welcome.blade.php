@@ -19,7 +19,132 @@
             </style>
         @endif
     </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+    <body class="min-h-screen bg-gradient-to-b from-white via-white to-gray-50 text-gray-900">
+        <header class="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.therapygym.online/media-library/b9004a533b5f4bfd9cf82059f413ed3a_Asset_1_3.png" alt="{{ config('app.name', 'Service') }}" class="h-9 w-auto" loading="eager" />
+                        <div class="hidden sm:block text-sm font-semibold text-gray-800">{{ config('app.name', 'Service') }}</div>
+                    </div>
+
+                    @if (Route::has('login'))
+                        <nav class="flex items-center gap-3">
+                            @auth
+                                <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 active:translate-y-0">
+                                    Enter Dashboard
+                                </a>
+                            @else
+                                <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 active:translate-y-0">
+                                    Enter Dashboard
+                                </a>
+
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-200 transition-all duration-200 hover:bg-gray-50 hover:-translate-y-0.5 active:translate-y-0">
+                                        Create Account
+                                    </a>
+                                @endif
+                            @endauth
+                        </nav>
+                    @endif
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="relative overflow-hidden">
+                <div class="absolute inset-0 -z-10">
+                    <div class="absolute -top-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-emerald-100 blur-3xl opacity-60"></div>
+                    <div class="absolute -bottom-24 right-0 h-72 w-[36rem] rounded-full bg-blue-100 blur-3xl opacity-60"></div>
+                </div>
+
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+                    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+                        <div>
+                            <p class="inline-flex items-center rounded-full bg-gray-900/5 px-4 py-1.5 text-xs font-semibold text-gray-700 ring-1 ring-gray-200">WhatsApp Campaign Service</p>
+                            <h1 class="mt-5 text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+                                Send campaigns faster.
+                                <span class="text-emerald-700">Track delivery live.</span>
+                            </h1>
+                            <p class="mt-4 text-base text-gray-600 sm:text-lg">Upload contacts, create your message, and send with controlled delay. Monitor progress in real time inside your dashboard.</p>
+
+                            <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+                                @auth
+                                    <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-emerald-500 hover:-translate-y-0.5 active:translate-y-0">Enter Dashboard</a>
+                                @else
+                                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-emerald-500 hover:-translate-y-0.5 active:translate-y-0">Enter Dashboard</a>
+                                @endauth
+                            </div>
+
+                            <div class="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                <div class="rounded-2xl bg-white/70 p-4 ring-1 ring-gray-200 shadow-sm">
+                                    <div class="text-sm font-semibold text-gray-900">Bulk Upload</div>
+                                    <div class="mt-1 text-xs text-gray-600">CSV / XLSX contacts</div>
+                                </div>
+                                <div class="rounded-2xl bg-white/70 p-4 ring-1 ring-gray-200 shadow-sm">
+                                    <div class="text-sm font-semibold text-gray-900">Live Progress</div>
+                                    <div class="mt-1 text-xs text-gray-600">0/100 tracking</div>
+                                </div>
+                                <div class="rounded-2xl bg-white/70 p-4 ring-1 ring-gray-200 shadow-sm">
+                                    <div class="text-sm font-semibold text-gray-900">Controlled Delay</div>
+                                    <div class="mt-1 text-xs text-gray-600">avoid API throttling</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <div class="rounded-3xl bg-white p-6 sm:p-8 ring-1 ring-gray-200 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm font-semibold text-gray-900">Campaign Overview</div>
+                                    <div class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">Ready</div>
+                                </div>
+
+                                <div class="mt-6 space-y-4">
+                                    <div class="rounded-2xl bg-gray-50 p-4 ring-1 ring-gray-200">
+                                        <div class="flex items-center justify-between text-sm">
+                                            <div class="font-semibold text-gray-900">Delivery Progress</div>
+                                            <div class="text-gray-600">42/100</div>
+                                        </div>
+                                        <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                                            <div class="h-2 w-[42%] rounded-full bg-emerald-600"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="rounded-2xl bg-gray-50 p-4 ring-1 ring-gray-200">
+                                            <div class="text-xs font-semibold text-gray-600">Status</div>
+                                            <div class="mt-1 text-sm font-semibold text-gray-900">Processing</div>
+                                        </div>
+                                        <div class="rounded-2xl bg-gray-50 p-4 ring-1 ring-gray-200">
+                                            <div class="text-xs font-semibold text-gray-600">Delay</div>
+                                            <div class="mt-1 text-sm font-semibold text-gray-900">2s / msg</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="rounded-2xl bg-gray-50 p-4 ring-1 ring-gray-200">
+                                        <div class="text-xs font-semibold text-gray-600">How it works</div>
+                                        <div class="mt-2 text-sm text-gray-700">Create a campaign, upload contacts, send, and monitor progress from your dashboard.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-gradient-to-r from-emerald-200/40 via-transparent to-blue-200/40 blur-2xl"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="border-t border-gray-100 bg-white">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="text-sm text-gray-600">© {{ date('Y') }} {{ config('app.name', 'Service') }}. All rights reserved.</div>
+                        <div class="text-sm text-gray-600">Powered by Laravel</div>
+                    </div>
+                </div>
+            </footer>
+        </main>
+
+        @if(false)
         <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
             @if (Route::has('login'))
                 <nav class="flex items-center justify-end gap-4">
@@ -54,6 +179,25 @@
                 <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
                     <h1 class="mb-1 font-medium">Let's get started</h1>
                     <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">Laravel has an incredibly rich ecosystem. <br>We suggest starting with the following.</p>
+
+                    <div class="mt-5 mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-[#1b1b18] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-black hover:-translate-y-0.5 active:translate-y-0">
+                                Enter Dashboard
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-xl bg-[#1b1b18] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-black hover:-translate-y-0.5 active:translate-y-0">
+                                Enter Dashboard
+                            </a>
+
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-[#1b1b18] border border-[#19140035] transition-all duration-200 hover:border-[#1915014a] hover:-translate-y-0.5 active:translate-y-0">
+                                    Create Account
+                                </a>
+                            @endif
+                        @endauth
+                    </div>
+
                     <ul class="flex flex-col mb-4 lg:mb-6">
                         <li class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:top-1/2 before:bottom-0 before:left-[0.4rem] before:absolute">
                             <span class="relative py-1 bg-white dark:bg-[#161615]">
@@ -272,6 +416,8 @@
 
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
+        @endif
+
         @endif
     </body>
 </html>

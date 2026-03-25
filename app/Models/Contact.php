@@ -11,6 +11,9 @@ class Contact extends Model
         'campaign_id',
         'name',
         'phone',
+        'message',
+        'file_url',
+        'image_url',
         'done_send',
     ];
 

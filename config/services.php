@@ -37,6 +37,7 @@ return [
     'notifapi' => [
         'url' => env('NOTIFAPI_URL'),
         'key' => env('NOTIFAPI_KEY'),
+        'delay_seconds' => (int) env('NOTIFAPI_DELAY_SECONDS', 1),
     ],
 
 ];

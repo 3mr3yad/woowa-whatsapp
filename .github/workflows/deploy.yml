@@ -45,6 +45,9 @@ jobs:
       - name: Install node dependencies
         run: npm ci
 
+      - name: Build frontend assets
+        run: npm run build
+
       - name: Prepare testing environment
         run: |
           cp .env.example .env
@@ -53,17 +56,12 @@ jobs:
       - name: Run tests
         run: php artisan test --without-tty
 
-      - name: Build frontend assets
-        run: npm run build
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: laravel-build
-          path: |
-            public/build
-            bootstrap/cache
-          if-no-files-found: warn
+          path: public/build
+          if-no-files-found: error
 
   deploy:
     name: Deploy to Server
@@ -78,7 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: laravel-build
-          path: .
+          path: public/build
 
       - name: Check required secrets
         run: |

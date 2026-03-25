@@ -12,8 +12,6 @@ class Campaign extends Model
         'title',
         'message',
         'excel_file',
-        'image_path',
-        'campaign_image_url',
         'status',
         'created_by',
     ];

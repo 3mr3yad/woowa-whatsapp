@@ -39,8 +39,6 @@ class ContactsImport implements ToCollection
             $message = $message !== null ? trim((string) $message) : null;
             $fileUrl = $this->getColumnValue($values, $headerMap, 'file_url', 3);
             $fileUrl = $fileUrl !== null ? trim((string) $fileUrl) : null;
-            $imageUrl = $this->getColumnValue($values, $headerMap, 'image_url', 4);
-            $imageUrl = $imageUrl !== null ? trim((string) $imageUrl) : null;
 
             if (!$phone) {
                 continue;
@@ -52,7 +50,6 @@ class ContactsImport implements ToCollection
                 'phone' => $phone,
                 'message' => $message,
                 'file_url' => $fileUrl,
-                'image_url' => $imageUrl,
                 'done_send' => false,
             ]);
         }
@@ -105,10 +102,6 @@ class ContactsImport implements ToCollection
 
             if (in_array($key, ['file_url', 'url', 'file'], true)) {
                 $map['file_url'] = $i;
-            }
-
-            if (in_array($key, ['image_url', 'image', 'img', 'picture'], true)) {
-                $map['image_url'] = $i;
             }
         }
 

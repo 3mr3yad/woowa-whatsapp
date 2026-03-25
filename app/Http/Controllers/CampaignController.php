@@ -10,7 +10,6 @@ use App\Services\NotifApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CampaignController extends Controller
@@ -32,8 +31,6 @@ class CampaignController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string'],
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv'],
-            'image' => ['nullable', 'image', 'max:5120'],
-            'campaign_image_url' => ['nullable', 'url'],
         ]);
 
         DB::beginTransaction();
@@ -41,17 +38,10 @@ class CampaignController extends Controller
         try {
             $path = $request->file('file')->store('campaigns', 'public');
 
-            $imagePath = null;
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('campaign-images', 'public');
-            }
-
             $campaign = Campaign::create([
                 'title' => $request->title,
                 'message' => $request->message,
                 'excel_file' => $path,
-                'image_path' => $imagePath,
-                'campaign_image_url' => $request->campaign_image_url ?: null,
                 'status' => 'draft',
                 'created_by' => auth()->id(),
             ]);

@@ -107,20 +107,6 @@
                 </div>
             </div>
 
-            <div>
-                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Image (optional)</label>
-                <input type="file" name="image" accept="image/*"
-                       class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm outline-none transition file:mr-4 file:rounded-lg file:border-0 file:bg-gray-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-gray-800 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-100 dark:file:bg-white dark:file:text-gray-900 dark:hover:file:bg-gray-100">
-                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">If provided, it will be sent with the message as an image caption (unless a per-row image URL exists in the sheet).</div>
-            </div>
-
-            <div>
-                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Image URL (recommended for local)</label>
-                <input type="url" name="campaign_image_url" value="{{ old('campaign_image_url') }}" placeholder="https://example.com/image.png"
-                       class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:ring-white/10">
-                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">This must be a publicly accessible HTTPS URL so WooWA can download the image. If set, it will be used when the sheet has no per-row image URL.</div>
-            </div>
-
             <div class="flex items-center justify-end gap-3">
                 <a href="{{ route('campaigns.index') }}"
                    class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-gray-100 ring-1 ring-gray-200 dark:ring-gray-700 transition-all duration-200 hover:bg-gray-50 hover:-translate-y-0.5 active:translate-y-0 dark:hover:bg-gray-900/60">

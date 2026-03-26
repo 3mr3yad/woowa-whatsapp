@@ -13,6 +13,11 @@
                 Create Campaign
             </a>
 
+            <a href="{{ route('system.logs') }}"
+               class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 {{ request()->routeIs('system.logs') ? 'bg-gray-900 text-white shadow-sm dark:bg-white dark:text-gray-900' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 hover:text-gray-900 dark:bg-gray-900/40 dark:text-gray-200 dark:ring-gray-700 dark:hover:bg-gray-900/60' }}">
+                System Logs
+            </a>
+
             @isset($campaign)
                 <a href="{{ route('campaigns.show', $campaign) }}"
                    class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 {{ request()->routeIs('campaigns.show') ? 'bg-gray-900 text-white shadow-sm dark:bg-white dark:text-gray-900' : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 hover:text-gray-900 dark:bg-gray-900/40 dark:text-gray-200 dark:ring-gray-700 dark:hover:bg-gray-900/60' }}">

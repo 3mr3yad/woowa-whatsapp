@@ -3,6 +3,7 @@
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SystemLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +31,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
     Route::post('/campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');
     Route::get('/campaigns/{campaign}/progress', [CampaignController::class, 'progress'])->name('campaigns.progress');
+
+    Route::get('/system/logs', [SystemLogController::class, 'index'])->name('system.logs');
 });
 
 require __DIR__.'/auth.php';

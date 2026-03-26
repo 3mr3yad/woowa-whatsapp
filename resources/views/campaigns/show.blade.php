@@ -199,7 +199,48 @@
                                     <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $log->name }}</td>
                                     <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $log->phone }}</td>
                                     <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
-                                        <div class="max-w-xl whitespace-pre-line break-words">{{ $log->message }}</div>
+                                        @php
+                                            $msg = (string) ($log->message ?? '');
+                                            $isImage = str_starts_with($msg, '[IMAGE] ');
+                                            $isFile = str_starts_with($msg, '[FILE] ');
+                                            $imageUrl = null;
+                                            $fileUrl = null;
+                                            $caption = null;
+
+                                            if ($isImage) {
+                                                $payload = trim(substr($msg, strlen('[IMAGE] ')));
+                                                $parts = preg_split("/\r\n|\r|\n/", $payload, 2);
+                                                $imageUrl = $parts[0] ?? null;
+                                                $caption = $parts[1] ?? '';
+                                            } elseif ($isFile) {
+                                                $fileUrl = trim(substr($msg, strlen('[FILE] ')));
+                                            }
+                                        @endphp
+
+                                        @if($isImage && $imageUrl)
+                                            <div class="max-w-xl space-y-2">
+                                                <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">Image</div>
+                                                <div class="break-words">
+                                                    <a href="{{ $imageUrl }}" target="_blank" class="text-emerald-700 hover:underline dark:text-emerald-300">{{ $imageUrl }}</a>
+                                                </div>
+                                                <div>
+                                                    <img src="{{ $imageUrl }}" alt="" class="h-16 w-16 rounded-lg object-cover ring-1 ring-gray-200 dark:ring-gray-700" loading="lazy" />
+                                                </div>
+                                                @if($caption !== null && $caption !== '')
+                                                    <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">Caption</div>
+                                                    <div class="whitespace-pre-line break-words">{{ $caption }}</div>
+                                                @endif
+                                            </div>
+                                        @elseif($isFile && $fileUrl)
+                                            <div class="max-w-xl space-y-1">
+                                                <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">File</div>
+                                                <div class="break-words">
+                                                    <a href="{{ $fileUrl }}" target="_blank" class="text-emerald-700 hover:underline dark:text-emerald-300">{{ $fileUrl }}</a>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="max-w-xl whitespace-pre-line break-words">{{ $log->message }}</div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $log->status === 'success' ? 'bg-green-50 text-green-700 ring-green-200 dark:bg-green-900/30 dark:text-green-200 dark:ring-green-800' : 'bg-red-50 text-red-700 ring-red-200 dark:bg-red-900/30 dark:text-red-200 dark:ring-red-800' }}">

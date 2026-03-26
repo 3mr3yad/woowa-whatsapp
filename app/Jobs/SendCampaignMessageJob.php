@@ -40,15 +40,15 @@ class SendCampaignMessageJob implements ShouldQueue
         $fileUrl = $contact->file_url;
 
         $imageUrl = null;
-        if ($campaign->image_path) {
+        if ($contact->image_url) {
+            $imageUrl = $contact->image_url;
+        } elseif ($campaign->image_path) {
             $publicUrl = (string) Storage::disk('public')->url($campaign->image_path);
             if (str_starts_with($publicUrl, 'http://') || str_starts_with($publicUrl, 'https://')) {
                 $imageUrl = $publicUrl;
             } else {
                 $imageUrl = rtrim((string) config('app.url'), '/') . '/' . ltrim($publicUrl, '/');
             }
-        } elseif ($contact->image_url) {
-            $imageUrl = $contact->image_url;
         }
 
         try {

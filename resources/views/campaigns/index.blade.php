@@ -11,7 +11,7 @@
 
                 <a href="{{ route('campaigns.create') }}"
                    class="inline-flex items-center justify-center rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 active:translate-y-0 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100">
-                    New Campaign
+                    New Campaign AMRRRR
                 </a>
             </div>
 

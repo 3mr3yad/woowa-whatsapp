@@ -88,7 +88,7 @@ class NotifApiService
             ->asJson()
             ->post($url, [
                 'phone_no' => $phone,
-                'key' => config('services.notifapi.key'),
+                'key' =>'adpff7398fb-c62f-405f-bdf0-dbea636a8533' ,
                 'url' => $imageUrl,
                 'message' => $message,
             ]);

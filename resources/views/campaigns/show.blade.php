@@ -250,27 +250,23 @@
                                     <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ $log->http_code }}</td>
                                     <td class="px-6 py-4 text-gray-600 dark:text-gray-300">{{ optional($log->sent_at)->format('Y-m-d H:i:s') }}</td>
                                     <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
-                                        @if($log->status !== 'success')
-                                            <details class="group">
-                                                <summary class="cursor-pointer select-none text-sm font-semibold text-gray-900 dark:text-gray-100">View</summary>
-                                                <div class="mt-2 space-y-2">
-                                                    @if($log->error_message)
-                                                        <div>
-                                                            <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">Error</div>
-                                                            <div class="whitespace-pre-line break-words text-xs">{{ $log->error_message }}</div>
-                                                        </div>
-                                                    @endif
-                                                    @if($log->api_response)
-                                                        <div>
-                                                            <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">API Response</div>
-                                                            <div class="whitespace-pre-line break-words text-xs">{{ $log->api_response }}</div>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </details>
-                                        @else
-                                            <span class="text-xs text-gray-400 dark:text-gray-500">-</span>
-                                        @endif
+                                        <details class="group">
+                                            <summary class="cursor-pointer select-none text-sm font-semibold text-gray-900 dark:text-gray-100">View</summary>
+                                            <div class="mt-2 space-y-2">
+                                                @if($log->error_message)
+                                                    <div>
+                                                        <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">Error</div>
+                                                        <div class="whitespace-pre-line break-words text-xs">{{ $log->error_message }}</div>
+                                                    </div>
+                                                @endif
+                                                @if($log->api_response)
+                                                    <div>
+                                                        <div class="text-xs font-semibold text-gray-700 dark:text-gray-300">API Response</div>
+                                                        <div class="whitespace-pre-line break-words text-xs">{{ $log->api_response }}</div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </details>
                                     </td>
                                 </tr>
                             @endforeach

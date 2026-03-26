@@ -56,8 +56,8 @@ class CampaignController extends Controller
             $campaign = Campaign::create([
                 'title' => $request->title,
                 'message' => $request->message,
-                'excel_file' => $path,
-                'image_path' => $imagePath,
+                // 'excel_file' => $path,
+                // 'image_path' => $imagePath,
                 'campaign_image_url' => $campaignImageUrl,
                 'status' => 'draft',
                 'created_by' => auth()->id(),
@@ -66,9 +66,9 @@ class CampaignController extends Controller
             Excel::import(new ContactsImport($campaign->id), $request->file('file'));
 
             DB::commit();
-
+// dd($campaign->id);
             return redirect()
-                ->route('campaigns.show', $campaign)
+                ->route('campaigns.show', $campaign->id)
                 ->with('success', 'Campaign created successfully.');
         } catch (\Throwable $e) {
             DB::rollBack();

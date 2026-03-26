@@ -8,6 +8,7 @@ use App\Models\MessageLog;
 use App\Services\NotifApiService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Storage;
 
 class SendCampaignMessageJob implements ShouldQueue
 {
@@ -38,15 +39,26 @@ class SendCampaignMessageJob implements ShouldQueue
 
         $fileUrl = $contact->file_url;
 
+        $imageUrl = null;
+        if ($contact->image_url) {
+            $imageUrl = $contact->image_url;
+        }
+        if ($campaign->image_path) {
+            $publicPath = Storage::disk('public')->url($campaign->image_path);
+            $imageUrl = $imageUrl ?: (rtrim((string) config('app.url'), '/') . $publicPath);
+        }
+
         try {
-            $result = $notifApiService->sendMessage($contact->phone, $finalMessage);
+            $result = $imageUrl
+                ? $notifApiService->sendImageUrl($contact->phone, $imageUrl, $finalMessage)
+                : $notifApiService->sendMessage($contact->phone, $finalMessage);
 
             MessageLog::create([
                 'campaign_id' => $campaign->id,
                 'contact_id' => $contact->id,
                 'phone' => $contact->phone,
                 'name' => $contact->name,
-                'message' => $finalMessage,
+                'message' => $imageUrl ? ('[IMAGE] ' . $imageUrl . "\n" . $finalMessage) : $finalMessage,
                 'api_response' => $result['body'],
                 'http_code' => $result['status'],
                 'status' => $result['success'] ? 'success' : 'failed',

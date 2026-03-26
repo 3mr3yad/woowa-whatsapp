@@ -13,6 +13,7 @@ class Contact extends Model
         'phone',
         'message',
         'file_url',
+        'image_url',
         'done_send',
     ];
 

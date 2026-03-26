@@ -49,7 +49,7 @@ class SendCampaignMessageJob implements ShouldQueue
             if (str_starts_with($publicUrl, 'http://') || str_starts_with($publicUrl, 'https://')) {
                 $imageUrl = $publicUrl;
             } else {
-                $imageUrl = rtrim((string) config('app.url'), '/') . '/' . ltrim($publicUrl, '/');
+                $imageUrl = rtrim(config('app.url'), '/') . '/storage/' . $campaign->image_path;
             }
         } elseif ($contact->image_url) {
             $imageUrl = (string) $contact->image_url;

@@ -48,8 +48,8 @@ class CampaignController extends Controller
                 if (str_starts_with($publicUrl, 'http://') || str_starts_with($publicUrl, 'https://')) {
                     $campaignImageUrl = $publicUrl;
                 } else {
-                    $base = rtrim((string) $request->getSchemeAndHttpHost(), '/');
-                    $campaignImageUrl = $base . '/' . ltrim($publicUrl, '/');
+                    $base = rtrim(config('app.url'), '/');
+                    $campaignImageUrl = $base . '/storage/' . $imagePath;
                 }
             }
 
@@ -114,8 +114,8 @@ class CampaignController extends Controller
                 if (str_starts_with($publicUrl, 'http://') || str_starts_with($publicUrl, 'https://')) {
                     $data['campaign_image_url'] = $publicUrl;
                 } else {
-                    $base = rtrim((string) $request->getSchemeAndHttpHost(), '/');
-                    $data['campaign_image_url'] = $base . '/' . ltrim($publicUrl, '/');
+                    $base = rtrim(config('app.url'), '/');
+                    $data['campaign_image_url'] = $base . '/storage/' . $data['image_path'];
                 }
             } elseif ($request->boolean('remove_image')) {
                 if ($campaign->image_path) {

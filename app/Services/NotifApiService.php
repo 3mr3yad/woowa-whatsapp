@@ -46,6 +46,7 @@ class NotifApiService
     {
         $url = rtrim((string) config('services.notifapi.url'), '/');
         $known = [
+            '/send_message',
             '/async_send_message',
             '/async_send_file_url',
             '/send_image_url',
@@ -64,6 +65,25 @@ class NotifApiService
     }
 
     public function sendMessage(string $phone, string $message): array
+    {
+        $url = $this->baseUrl() . '/send_message';
+
+        $response = Http::timeout(60)
+            ->acceptJson()
+            ->asJson()
+            ->post($url, [
+                'phone_no' => $phone,
+                'key' => config('services.notifapi.key'),
+                'message' => $message,
+                'skip_link' => true,
+                'flag_retry' => 'on',
+                'pendingTime' => 3,
+            ]);
+
+        return $this->normalizeResult($response);
+    }
+
+    public function sendMessageAsync(string $phone, string $message): array
     {
         $url = $this->baseUrl() . '/async_send_message';
 

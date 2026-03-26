@@ -74,6 +74,75 @@ class CampaignController extends Controller
         return view('campaigns.show', compact('campaign'));
     }
 
+    public function edit(Campaign $campaign)
+    {
+        return view('campaigns.edit', compact('campaign'));
+    }
+
+    public function update(Request $request, Campaign $campaign)
+    {
+        $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'message' => ['required', 'string'],
+            'image' => ['nullable', 'image', 'max:5120'],
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $data = [
+                'title' => $request->title,
+                'message' => $request->message,
+            ];
+
+            if ($request->hasFile('image')) {
+                if ($campaign->image_path) {
+                    Storage::disk('public')->delete($campaign->image_path);
+                }
+                $data['image_path'] = $request->file('image')->store('campaign-images', 'public');
+            }
+
+            $campaign->update($data);
+
+            DB::commit();
+
+            return redirect()
+                ->route('campaigns.show', $campaign)
+                ->with('success', 'Campaign updated successfully.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    public function destroy(Campaign $campaign)
+    {
+        DB::beginTransaction();
+
+        try {
+            if ($campaign->excel_file) {
+                Storage::disk('public')->delete($campaign->excel_file);
+            }
+
+            if ($campaign->image_path) {
+                Storage::disk('public')->delete($campaign->image_path);
+            }
+
+            $campaign->logs()->delete();
+            $campaign->contacts()->delete();
+            $campaign->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('campaigns.index')
+                ->with('success', 'Campaign deleted successfully.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
     public function send(Campaign $campaign, NotifApiService $notifApiService)
     {
         $campaign->update(['status' => 'processing']);

@@ -47,6 +47,21 @@
                                            class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 ring-1 ring-gray-200 dark:ring-gray-700 transition-all duration-200 hover:bg-gray-50 hover:-translate-y-0.5 active:translate-y-0 dark:hover:bg-gray-900/60">
                                             View
                                         </a>
+
+                                        <a href="{{ route('campaigns.edit', $campaign) }}"
+                                           class="ml-2 inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 ring-1 ring-gray-200 dark:ring-gray-700 transition-all duration-200 hover:bg-gray-50 hover:-translate-y-0.5 active:translate-y-0 dark:hover:bg-gray-900/60">
+                                            Edit
+                                        </a>
+
+                                        <form action="{{ route('campaigns.destroy', $campaign) }}" method="POST" class="ml-2 inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    onclick="return confirm('Delete this campaign? This will remove its contacts and logs.')"
+                                                    class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold text-red-700 ring-1 ring-red-200 transition-all duration-200 hover:bg-red-50 hover:-translate-y-0.5 active:translate-y-0 dark:text-red-200 dark:ring-red-800 dark:hover:bg-red-900/20">
+                                                Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach

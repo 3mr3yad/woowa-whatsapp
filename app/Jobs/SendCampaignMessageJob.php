@@ -51,6 +51,8 @@ class SendCampaignMessageJob implements ShouldQueue
             } else {
                 $imageUrl = rtrim((string) config('app.url'), '/') . '/' . ltrim($publicUrl, '/');
             }
+        } elseif ($contact->image_url) {
+            $imageUrl = (string) $contact->image_url;
         }
 
         // Force HTTPS
@@ -73,7 +75,7 @@ class SendCampaignMessageJob implements ShouldQueue
                 'http_code' => $result['status'],
                 'status' => $result['success'] ? 'success' : 'failed',
                 'error_message' => $result['success'] ? null : 'API request failed',
-                'sent_at' => now(),
+                'sent_at' => \now(),
             ]);
 
             if ($result['success']) {
@@ -90,7 +92,7 @@ class SendCampaignMessageJob implements ShouldQueue
                 'http_code' => null,
                 'status' => 'failed',
                 'error_message' => $e->getMessage(),
-                'sent_at' => now(),
+                'sent_at' => \now(),
             ]);
         }
 
@@ -108,7 +110,7 @@ class SendCampaignMessageJob implements ShouldQueue
                     'http_code' => $fileResult['status'],
                     'status' => $fileResult['success'] ? 'success' : 'failed',
                     'error_message' => $fileResult['success'] ? null : 'API request failed',
-                    'sent_at' => now(),
+                    'sent_at' => \now(),
                 ]);
             } catch (\Throwable $e) {
                 MessageLog::create([
@@ -121,7 +123,7 @@ class SendCampaignMessageJob implements ShouldQueue
                     'http_code' => null,
                     'status' => 'failed',
                     'error_message' => $e->getMessage(),
-                    'sent_at' => now(),
+                    'sent_at' => \now(),
                 ]);
             }
         }

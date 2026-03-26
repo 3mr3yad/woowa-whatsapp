@@ -117,6 +117,12 @@ class CampaignController extends Controller
                     $base = rtrim((string) $request->getSchemeAndHttpHost(), '/');
                     $data['campaign_image_url'] = $base . '/' . ltrim($publicUrl, '/');
                 }
+            } elseif ($request->boolean('remove_image')) {
+                if ($campaign->image_path) {
+                    Storage::disk('public')->delete($campaign->image_path);
+                }
+                $data['image_path'] = null;
+                $data['campaign_image_url'] = null;
             }
 
             $campaign->update($data);

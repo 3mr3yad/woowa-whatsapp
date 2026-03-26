@@ -13,6 +13,15 @@
                         <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">{{ $campaign->title }}</h1>
                         <p class="mt-3 whitespace-pre-line text-gray-700 dark:text-gray-200">{{ $campaign->message }}</p>
 
+                        @if($campaign->image_path || $campaign->campaign_image_url)
+                            <div class="mt-6">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Campaign Image</div>
+                                <img src="{{ $campaign->campaign_image_url ?: asset('storage/' . $campaign->image_path) }}"
+                                     class="h-48 w-auto rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800"
+                                     alt="Campaign Image">
+                            </div>
+                        @endif
+
                         <div class="mt-4">
                             <span class="text-sm text-gray-500 dark:text-gray-400">Status</span>
                             <div class="mt-1">

@@ -26,6 +26,7 @@
             <form x-data="{
                         previewUrl: @js($campaign->image_path ? asset('storage/' . $campaign->image_path) : null),
                         uploading: false,
+                        removeImageFlag: false,
                         message: @js(old('message', $campaign->message)),
                         insertText(text) {
                             const el = this.$refs.message;
@@ -61,12 +62,14 @@
                             const file = event.target.files[0];
                             if (file) {
                                 this.previewUrl = URL.createObjectURL(file);
+                                this.removeImageFlag = false;
                             } else {
                                 this.previewUrl = null;
                             }
                         },
                         removeImage() {
                             this.previewUrl = null;
+                            this.removeImageFlag = true;
                             this.$refs.imageInput.value = '';
                         }
                   }"
@@ -74,6 +77,8 @@
                   action="{{ route('campaigns.update', $campaign) }}" method="POST" enctype="multipart/form-data" class="space-y-5 bg-white/80 dark:bg-gray-900/40 backdrop-blur p-6 sm:p-8 rounded-2xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-800">
                 @csrf
                 @method('PUT')
+
+                <input type="hidden" name="remove_image" :value="removeImageFlag ? '1' : '0'">
 
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Title</label>

@@ -48,7 +48,8 @@ class CampaignController extends Controller
                 if (str_starts_with($publicUrl, 'http://') || str_starts_with($publicUrl, 'https://')) {
                     $campaignImageUrl = $publicUrl;
                 } else {
-                    $campaignImageUrl = rtrim((string) config('app.url'), '/') . '/' . ltrim($publicUrl, '/');
+                    $base = rtrim((string) $request->getSchemeAndHttpHost(), '/');
+                    $campaignImageUrl = $base . '/' . ltrim($publicUrl, '/');
                 }
             }
 
@@ -113,7 +114,8 @@ class CampaignController extends Controller
                 if (str_starts_with($publicUrl, 'http://') || str_starts_with($publicUrl, 'https://')) {
                     $data['campaign_image_url'] = $publicUrl;
                 } else {
-                    $data['campaign_image_url'] = rtrim((string) config('app.url'), '/') . '/' . ltrim($publicUrl, '/');
+                    $base = rtrim((string) $request->getSchemeAndHttpHost(), '/');
+                    $data['campaign_image_url'] = $base . '/' . ltrim($publicUrl, '/');
                 }
             }
 

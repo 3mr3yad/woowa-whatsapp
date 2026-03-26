@@ -64,6 +64,10 @@ class SendCampaignMessageJob implements ShouldQueue
             }
         }
 
+        if ($imageUrl && str_starts_with($imageUrl, 'http://')) {
+            $imageUrl = 'https://' . substr($imageUrl, strlen('http://'));
+        }
+
         try {
             $result = $imageUrl
                 ? $notifApiService->sendImageUrl($contact->phone, $imageUrl, $finalMessage)

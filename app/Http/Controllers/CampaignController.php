@@ -41,8 +41,15 @@ class CampaignController extends Controller
             $path = $request->file('file')->store('campaigns', 'public');
 
             $imagePath = null;
+            $campaignImageUrl = null;
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('campaign-images', 'public');
+                $publicUrl = (string) Storage::disk('public')->url($imagePath);
+                if (str_starts_with($publicUrl, 'http://') || str_starts_with($publicUrl, 'https://')) {
+                    $campaignImageUrl = $publicUrl;
+                } else {
+                    $campaignImageUrl = rtrim((string) config('app.url'), '/') . '/' . ltrim($publicUrl, '/');
+                }
             }
 
             $campaign = Campaign::create([
@@ -50,6 +57,7 @@ class CampaignController extends Controller
                 'message' => $request->message,
                 'excel_file' => $path,
                 'image_path' => $imagePath,
+                'campaign_image_url' => $campaignImageUrl,
                 'status' => 'draft',
                 'created_by' => auth()->id(),
             ]);
@@ -100,6 +108,13 @@ class CampaignController extends Controller
                     Storage::disk('public')->delete($campaign->image_path);
                 }
                 $data['image_path'] = $request->file('image')->store('campaign-images', 'public');
+
+                $publicUrl = (string) Storage::disk('public')->url($data['image_path']);
+                if (str_starts_with($publicUrl, 'http://') || str_starts_with($publicUrl, 'https://')) {
+                    $data['campaign_image_url'] = $publicUrl;
+                } else {
+                    $data['campaign_image_url'] = rtrim((string) config('app.url'), '/') . '/' . ltrim($publicUrl, '/');
+                }
             }
 
             $campaign->update($data);

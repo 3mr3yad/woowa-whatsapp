@@ -25,6 +25,7 @@
 
         <form x-data="{
                     fileName: '',
+                    previewUrl: null,
                     uploading: false,
                     message: @js(old('message')),
                     insertText(text) {
@@ -56,6 +57,18 @@
                             const selEnd = selStart + selected.length;
                             el.setSelectionRange(selStart, selEnd);
                         });
+                    },
+                    handleImageChange(event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            this.previewUrl = URL.createObjectURL(file);
+                        } else {
+                            this.previewUrl = null;
+                        }
+                    },
+                    removeImage() {
+                        this.previewUrl = null;
+                        this.$refs.imageInput.value = '';
                     }
               }"
               @submit="uploading = true"
@@ -110,7 +123,20 @@
             <div>
                 <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Image (optional)</label>
                 <input type="file" name="image" accept="image/*"
+                       x-ref="imageInput"
+                       @change="handleImageChange"
                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm outline-none transition file:mr-4 file:rounded-lg file:border-0 file:bg-gray-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-gray-800 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-100 dark:file:bg-white dark:file:text-gray-900 dark:hover:file:bg-gray-100">
+
+                <template x-if="previewUrl">
+                    <div class="mt-4 relative inline-block">
+                        <img :src="previewUrl" class="h-32 w-auto rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
+                        <button type="button" @click="removeImage" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </template>
             </div>
 
             <div class="flex items-center justify-end gap-3">
